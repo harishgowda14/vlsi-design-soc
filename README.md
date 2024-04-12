@@ -1,9 +1,9 @@
 # Table of Contents
 1. [Day 1:](#day1)
     - [Get Familiar with Open-Source EDA Tools](#get-familiar-with-open-source-eda-tools)
-    - [Intro to OpenLane](#Directory-Structure-of-Openlane)
-    - [Directory Structure of Openlane:](#Directory-Structure-of-Openlane)
-    - [Steps to characterize synthesis results](#Steps-to-characterize-synthesis-results)
+    - [Intro to OpenLane](#intro-to-openlane)
+    - [Directory Structure of Openlane:](#directory-structure-of-openlane)
+    - [Steps to characterize synthesis results](#steps-to-characterize-synthesis-results)
 ---
 
 ## Get Familiar with Open-Source EDA Tools<a name="get-familiar-with-open-source-eda-tools"><\a>
@@ -16,7 +16,7 @@
 - `clear`: Clear the terminal.
 - `tree` :This command is used to print the hierarchy of the file system from the present directory.
 
-### Intro to OpenLane<a name="Directory-Structure-of-Openlane"></a>
+### Intro to OpenLane<a name="intro-to-openlane"></a>
 - OpenLane is an automated RTLtoGDSII flow. It consists of a variety of open-source tools including:
 <div align="center">
 
@@ -33,7 +33,7 @@
 </div>
 
 
-## Directory Structure of Openlane:<a name="Directory-Structure-of-Openlane"></a>- This the directory structure of the openlane
+## Directory Structure of Openlane:<a name="directory-structure-of-openlane"></a>- This the directory structure of the openlane
 
 ```
 
@@ -152,7 +152,7 @@ $ run_synthesis
 - After synthesis , If every thing goes correctly, we can see the terminal result as,
 - ![image](https://i.imgur.com/9dYgzPi.png)
 
-## [Steps to characterize synthesis results](<a name="Steps-to-characterize-synthesis-results"><\a>
+## [Steps to characterize synthesis results](<a name="steps-to-characterize-synthesis-results"><\a>
 -From the sysnthesis results, we can observe a report printed on the console.Like below one
 ![image](https://i.imgur.com/ZoNDdPU.png)
 
