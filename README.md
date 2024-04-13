@@ -4,9 +4,11 @@
     - [Intro to OpenLane](#intro-to-openlane)
     - [Directory Structure of Openlane:](#directory-structure-of-openlane)
     - [Steps to characterize synthesis results](#steps-to-characterize-synthesis-results)
+   
+2. [Day 1:](#day2)
 ---
 
-## Get Familiar with Open-Source EDA Tools<a name="get-familiar-with-open-source-eda-tools"><\a>
+## Get Familiar with Open-Source EDA Tools<a name="get-familiar-with-open-source-eda-tools"></a>
 
 ### Basic Bash Commands:
 - `cd`   : Change directory.
@@ -16,7 +18,7 @@
 - `clear`: Clear the terminal.
 - `tree` :This command is used to print the hierarchy of the file system from the present directory.
 
-### Intro to OpenLane<a name="intro-to-openlane"></a>
+### Intro to OpenLane:<a name="intro-to-openlane"></a>
 - OpenLane is an automated RTLtoGDSII flow. It consists of a variety of open-source tools including:
 <div align="center">
 
@@ -33,7 +35,8 @@
 </div>
 
 
-## Directory Structure of Openlane:<a name="directory-structure-of-openlane"></a>- This the directory structure of the openlane
+## Directory Structure of Openlane:<a name="directory-structure-of-openlane"></a>
+- This the directory structure of the openlane
 
 ```
 
@@ -142,25 +145,28 @@ $package require openlane 0.9
 - before running the synthesis , we have to prep the design. 
 ```
 $ prep -design picorv32a
-$ run_synthesis
 ```
 - ![image](https://i.imgur.com/00Mqqo7.png)
 - Result for the above command.
 ![image](https://i.imgur.com/D3yTMWZ.png)
-- Preparation state  is done ,Now we can processed with the synthesis.Now we execute  `$ run_synthesis`.
+- Preparation state  is done ,Now we can processed with the synthesis.Now we executing the  command.
+  ```
+    $ run_synthesis
+  ```
 ![image](https://i.imgur.com/GrLreJt.png)
 - After synthesis , If every thing goes correctly, we can see the terminal result as,
 - ![image](https://i.imgur.com/9dYgzPi.png)
 
-## [Steps to characterize synthesis results](<a name="steps-to-characterize-synthesis-results"><\a>
--From the sysnthesis results, we can observe a report printed on the console.Like below one
+## Steps to characterize synthesis results:<a name="steps-to-characterize-synthesis-results"><\a>
+-From the sysnthesis results, we can observe a report printed on the console.
 ![image](https://i.imgur.com/ZoNDdPU.png)
 
 ```
 flop ratio = (number of flip flops) / (number of total cells)
 ```
-- From the above stata we can absorve that,flip flop ratio is 10.84%.
+- From the above data we can absorve that,flip flop ratio is 10.84%.
 - After completing the synthesis process, we can now confirm that all the mappings have been performed by ABC.
 ![image](https://i.imgur.com/oQIMLsn.png)
 -In the report, we can identify the completion time of the actual synthesis. The synthesis statistics report displayed below is consistent with the previously observed information.
 
+## Day2: <a name="day2"></a>
