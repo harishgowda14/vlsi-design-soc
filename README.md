@@ -140,7 +140,9 @@ $  docker
 $ ./flow.tcl --interactive
 ```
 - Here we are using `--interactive` , because we are manually running every tool by overselves.If we just execute `./flow.tcl` The entire process from RTL to GDS will we completed.
+
 ![image](https://i.imgur.com/OzGRR6A.jpeg)
+
 - we need add the required  packages , the below command does that.
 ```
 $package require openlane 0.9
@@ -149,19 +151,26 @@ $package require openlane 0.9
 ```
 $ prep -design picorv32a
 ```
-- ![image](https://i.imgur.com/00Mqqo7.png)
+
+![image](https://i.imgur.com/00Mqqo7.png)
+
 - Result for the above command.
+
 ![image](https://i.imgur.com/D3yTMWZ.png)
 - Preparation state  is done ,Now we can processed with the synthesis.Now we executing the  command.
   ```
     $ run_synthesis
   ```
+
 ![image](https://i.imgur.com/GrLreJt.png)
+
 - After synthesis , If every thing goes correctly, we can see the terminal result as,
-- ![image](https://i.imgur.com/9dYgzPi.png)
+
+![image](https://i.imgur.com/9dYgzPi.png)
 
 ## Steps to characterize synthesis results:<a name="steps-to-characterize-synthesis-results"><\a>
 -From the sysnthesis results, we can observe a report printed on the console.
+
 ![image](https://i.imgur.com/ZoNDdPU.png)
 
 ```
@@ -169,6 +178,7 @@ flop ratio = (number of flip flops) / (number of total cells)
 ```
 - From the above data we can absorve that,flip flop ratio is 10.84%.
 - After completing the synthesis process, we can now confirm that all the mappings have been performed by ABC.
+
 ![image](https://i.imgur.com/oQIMLsn.png)
 -In the report, we can identify the completion time of the actual synthesis. The synthesis statistics report displayed below is consistent with the previously observed information.
 
@@ -178,9 +188,11 @@ flop ratio = (number of flip flops) / (number of total cells)
 ```
 $ run_floorplan
 ```
+
 ![image](https://i.imgur.com/SD6Bs9e.png)
 
 - If floorplan execute without any error's we should get the terminal output like this.
+
 ![image](https://i.imgur.com/mwCxfzn.png)
 - Floorplan results are created in the below locations.
 ```
@@ -188,6 +200,7 @@ vsduser@vsdsquadron:~/Desktop/work/tools/openlane_working_dir/openlane/designs/p
 merged_unpadded.lef  picorv32a.floorplan.def  picorv32a.floorplan.def.png
 ```
 - picorv32a.floorplan.def contains the floorplaning information and picorv32a.floorplan.def.png is a image of teh floorplan., you can see the image below.
+
 ![picorv32a.floorplan.def.png](https://i.imgur.com/QKvhOp2.png)
 
 # Review floorplan layout in Magic : <a name="review-floorplan-layout-in-magic"></a>
@@ -201,14 +214,17 @@ magic -T /home/<user name>/Desktop/work/tools/openlane_working_dir/pdks/sky130A/
 
 ![magic window](https://i.imgur.com/D7yu9ft.png)
 - Then point eh mouse on the design , and press `s`, which will select the design and then press `v` which will make the design center.
-- ![magic s+v](https://i.imgur.com/H6kHeal.png)
+
+![magic s+v](https://i.imgur.com/H6kHeal.png)
 - on the design press left click on a corner and right click on other place to select the a portion of the design, then we have to press `z` to zoom that section. In magic we have to press `s` to select any sections, so we randomly choose a component and press 's' ,and shift magic command window and execute 
 ```
 % what
 ```
 - This will show the deatils of the selected component.
-- ![image](https://i.imgur.com/GHUNyvY.png)
+
+![image](https://i.imgur.com/GHUNyvY.png)
 - you can observer the the Decap cells are arranged at the border of the side rows.
+
 ![image](https://i.imgur.com/miUYCnj.png)
 # Congestion aware placement using RePlAce<a name ="congestion-aware-placement"></a>
 - After floorplanning , we should go to do placement. As we know we have two type of placements.Global placement and deatiled placement, When we run the placement, first Global placement is happens. main objective of glibal placement is to reducing the length of wires.
@@ -225,12 +241,14 @@ lrwxrwxrwx 1 vsduser vsduser      29 Apr 14 11:27 merged_unpadded.lef -> ../../t
 -rw-r--r-- 1 vsduser vsduser  816328 Apr 14 12:14 picorv32a.placement.def.png
 ```
 - The image `picorv32a.placement.def.png` is the snapshot of the placemnt that is automatilcally created.
+
 ![image](https://i.imgur.com/Ge9q8iE.png)
 
 - we view the plcament in magic, execute the command, from the `/Desktop/work/tools/openlane_working_dir/openlane/designs/picorv32a/runs/14-04_05-57/results/placement` folder.
 ```
 magic -T /home/vsduser/Desktop/work/tools/openlane_working_dir/pdks/sky130A/libs.tech/magic/sky130A.tech lef read ../../tmp/merged.lef def read picorv32a.placement.def
 ```
-- After executing the command you the magic window will pop and up and you can observe the floorplan.
+- After executing the command you the magic window will pop and up and you can observe the floorplan.In zoom image you can see the global palcement.
+
 ![image](https://i.imgur.com/0nc8OdA.png)
 ![image](https://i.imgur.com/CCjnruN.png)
