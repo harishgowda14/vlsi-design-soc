@@ -5,9 +5,12 @@
     - [Directory Structure of Openlane:](#directory-structure-of-openlane)
     - [Steps to characterize synthesis results](#steps-to-characterize-synthesis-results)
    
-2. [Day 1:](#day2)
+2. [Day 2:](#day2)
+    - [Steps to run floorplan using OpenLANE](#steps-to-run-floorplan-using-openlane)
+    - [Review floorplan layout in Magic](#review-floorplan-layout-in-magic)
+    - [Congestion aware placement using RePlAce](#congestion-aware-placement)
 ---
-
+# Day1:<a name ="day1"></a>
 ## Get Familiar with Open-Source EDA Tools<a name="get-familiar-with-open-source-eda-tools"></a>
 
 ### Basic Bash Commands:
@@ -170,3 +173,64 @@ flop ratio = (number of flip flops) / (number of total cells)
 -In the report, we can identify the completion time of the actual synthesis. The synthesis statistics report displayed below is consistent with the previously observed information.
 
 ## Day2: <a name="day2"></a>
+# Steps to run floorplan using OpenLANE:<a name="steps-to-run-floorplan-using-openlane"></a>
+- To create a floorplanning, we need to execute the command.
+```
+$ run_floorplan
+```
+![image](https://i.imgur.com/SD6Bs9e.png)
+
+- If floorplan execute without any error's we should get the terminal output like this.
+![image](https://i.imgur.com/mwCxfzn.png)
+- Floorplan results are created in the below locations.
+```
+vsduser@vsdsquadron:~/Desktop/work/tools/openlane_working_dir/openlane/designs/picorv32a/runs/14-04_05-57/results/floorplan$ ls
+merged_unpadded.lef  picorv32a.floorplan.def  picorv32a.floorplan.def.png
+```
+- picorv32a.floorplan.def contains the floorplaning information and picorv32a.floorplan.def.png is a image of teh floorplan., you can see the image below.
+![picorv32a.floorplan.def.png](https://i.imgur.com/QKvhOp2.png)
+
+# Review floorplan layout in Magic : <a name="review-floorplan-layout-in-magic"></a>
+- To view  and edit the floor plan we ca use magic, we need to execute the command
+```
+magic -T /home/<user name>/Desktop/work/tools/openlane_working_dir/pdks/sky130A/libs.tech/magic/sky130A.tech lef read ../../tmp/merged.lef def read picorv32a.floorplan.def
+```
+
+![magic command](https://i.imgur.com/7H2BDcB.png)
+- After executing the above command you will find a pop window of magic which should look like,
+
+![magic window](https://i.imgur.com/D7yu9ft.png)
+- Then point eh mouse on the design , and press `s`, which will select the design and then press `v` which will make the design center.
+- ![magic s+v](https://i.imgur.com/H6kHeal.png)
+- on the design press left click on a corner and right click on other place to select the a portion of the design, then we have to press `z` to zoom that section. In magic we have to press `s` to select any sections, so we randomly choose a component and press 's' ,and shift magic command window and execute 
+```
+% what
+```
+- This will show the deatils of the selected component.
+- ![image](https://i.imgur.com/GHUNyvY.png)
+- you can observer the the Decap cells are arranged at the border of the side rows.
+![image](https://i.imgur.com/miUYCnj.png)
+# Congestion aware placement using RePlAce<a name ="congestion-aware-placement"></a>
+- After floorplanning , we should go to do placement. As we know we have two type of placements.Global placement and deatiled placement, When we run the placement, first Global placement is happens. main objective of glibal placement is to reducing the length of wires.
+- we make the placement by executing the command
+```
+run_placement
+```
+- The results of this command are stored the in placement folder in the results.The below shows the results,
+```
+vsduser@vsdsquadron:~/Desktop/work/tools/openlane_working_dir/openlane/designs/picorv32a/runs/14-04_05-57/results/placement$ l -ltr
+total 3892
+lrwxrwxrwx 1 vsduser vsduser      29 Apr 14 11:27 merged_unpadded.lef -> ../../tmp/merged_unpadded.lef
+-rw-r--r-- 1 vsduser vsduser 3164924 Apr 14 12:14 picorv32a.placement.def
+-rw-r--r-- 1 vsduser vsduser  816328 Apr 14 12:14 picorv32a.placement.def.png
+```
+- The image `picorv32a.placement.def.png` is the snapshot of the placemnt that is automatilcally created.
+![image](https://i.imgur.com/Ge9q8iE.png)
+
+- we view the plcament in magic, execute the command, from the `/Desktop/work/tools/openlane_working_dir/openlane/designs/picorv32a/runs/14-04_05-57/results/placement` folder.
+```
+magic -T /home/vsduser/Desktop/work/tools/openlane_working_dir/pdks/sky130A/libs.tech/magic/sky130A.tech lef read ../../tmp/merged.lef def read picorv32a.placement.def
+```
+- After executing the command you the magic window will pop and up and you can observe the floorplan.
+![image](https://i.imgur.com/0nc8OdA.png)
+![image](https://i.imgur.com/CCjnruN.png)
