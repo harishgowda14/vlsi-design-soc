@@ -12,6 +12,9 @@
 3. [Day3:](#day3)
     - [Lab introduction to Sky130 basic layers layout and LEF using inverte](#lab-intro-to-sky130-basics)
     - [Lab steps to create std cell layout and extract spice netlist](#lab-setps-create-std-cell-layout-and-extract-spice-netlist)
+    - [Lab introduction to Magic tool options and DRC rules](#lab-drc-rules)
+    - [Lab introduction to Magic and steps to load Sky130 tech-rules](#lab-introduction-to-magic-and-steps-to-load-sky130)
+    - [Lab exercise to fix poly.9 error in Sky130 tech-file](#lab-exercise-to-fix-poly.9-tech-file)
 ---
 # Day1:<a name ="day1"></a>
 ## Get Familiar with Open-Source EDA Tools<a name="get-familiar-with-open-source-eda-tools"></a>
@@ -276,7 +279,120 @@ ext2spice
 - ![image](https://i.imgur.com/KcLTdUa.png)
 - The generated spice file contains the following code.
 - ![image](https://i.imgur.com/RLQJMOo.png)
+- We need to make some changes in the code so that we can make the a transiant simualtion for the given circuit.
+![image](https://i.imgur.com/vDycq8d.png)
 - Then using ngpsice, we can simulate the inverter.
 ```
     $ ngspice sky130_inv.spice
 ```
+- After executing the command you will see the output as below, If there are no error.
+![image](https://i.imgur.com/H7VfThE.png)
+- To plot the graphs we need to enter the below command.And you will the the waveform .
+```
+ngspice 1-> plot y vs time a
+```
+![image](https://i.imgur.com/agvq5Vq.png)
+
+- We can calculate the rise time,fall time, propagation delay, cell fall delay from the above graph
+
+### rise time:
+- It is the time taken by the signal to rise from 20% to 80% value .rise time=(2.2489-2.1819)=66.92psec
+
+### fall time
+- it is the time take by output for transition from 80% to 20%. rise time= (4.09512 - 4.05264)e-09 = 42.51 psec.
+
+### propagation delay
+- it is the time difference between the 50% of input and 50% of the output
+.propogation delay =(2.2106 - 2.15012)e-09 = 60.48 psec.
+
+
+### cell fall delay
+- it is time for output falling to 50% and input is rising to 50%. so, cell fall delay =(4.07735 - 4.04988)e-09 = 27.47 psec.
+
+# Lab introduction to Magic tool options and DRC rules <a name="lab-drc-rules"></a>
+- To download and extract the DRC corrections run the following commands.
+```
+$ wget http://opencircuitdesign.com/open_pdks/archive/drc_tests.tgz
+$ tar xfz drc_tests.tgz
+$ cd drc_tests
+```
+- In the folder created you will find the all the files as listed below
+```
+drc_Tests
+├── capm.mag
+├── difftap.mag
+├── dnwell.mag
+├── hvtp.mag
+├── hvtr.mag
+├── licon.mag
+├── li.mag
+├── lvtn.mag
+├── mcon.mag
+├── met1.mag
+├── met2.mag
+├── met3.mag
+├── met4.mag
+├── met5.mag
+├── npc.mag
+├── nsd.mag
+├── nwell.mag
+├── pad.mag
+├── poly.mag
+├── psd.mag
+├── rpm.mag
+├── sky130A.tech
+├── tunm.mag
+├── varac.mag
+├── via2.mag
+├── via3.mag
+├── via4.mag
+└── via.mag
+
+```
+# Lab introduction to Magic and steps to load Sky130 tech-rules <a name="lab-introduction-to-magic-and-steps-to-load-sky130"></a>
+- To open the magic use the below command
+```
+$ magic -d XR &
+```
+
+![image](https://i.imgur.com/bQ7y8jL.png)
+- `drc why` will give the resons for the failure of the system
+
+![image](https://i.imgur.com/nM2bSPq.png)
+- Next, select a blank area and hover the mouse pointer over the metal3 contact icon. Press the `p` button and type `pek` in the tkcon. Then execute the command `cif see VIA2` in the tkcon tab.This will show the via information.
+- 
+![image](https://i.imgur.com/OUb4t8g.png)
+
+- To remove the information , by executing the command `clear feed` . 
+
+![image](https://i.imgur.com/iYUY26C.png)
+
+# Lab exercise to fix poly.9 error in Sky130 tech-file<a name="lab-exercise-to-fix-poly.9-tech-file">
+- to load the poly ,execute the command
+```
+load poly
+```
+
+![image](https://i.imgur.com/DOyqf42.png)
+
+- The wrong rules are
+
+![image](https://i.imgur.com/tGv3bAx.png)
+![image](https://i.imgur.com/27JbDhS.png)
+
+- The newly added rules are 
+
+![image](https://i.imgur.com/LQOH5rW.png)
+![image](https://i.imgur.com/sctP6Dt.png)
+
+- changing the drc rules we have to reload the tech file and and check the drc again by running the commands.
+
+```
+tech load sky130A.tech
+check drc
+```
+
+![image](https://i.imgur.com/ZHjFWwA.png)
+![image](https://i.imgur.com/MLYWdDn.png)
+
+
