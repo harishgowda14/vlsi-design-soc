@@ -9,6 +9,9 @@
     - [Steps to run floorplan using OpenLANE](#steps-to-run-floorplan-using-openlane)
     - [Review floorplan layout in Magic](#review-floorplan-layout-in-magic)
     - [Congestion aware placement using RePlAce](#congestion-aware-placement)
+3. [Day3:](#day3)
+    - [Lab introduction to Sky130 basic layers layout and LEF using inverte](#lab-intro-to-sky130-basics)
+    - [Lab steps to create std cell layout and extract spice netlist](#lab-setps-create-std-cell-layout-and-extract-spice-netlist)
 ---
 # Day1:<a name ="day1"></a>
 ## Get Familiar with Open-Source EDA Tools<a name="get-familiar-with-open-source-eda-tools"></a>
@@ -252,3 +255,28 @@ magic -T /home/vsduser/Desktop/work/tools/openlane_working_dir/pdks/sky130A/libs
 
 ![image](https://i.imgur.com/0nc8OdA.png)
 ![image](https://i.imgur.com/CCjnruN.png)
+# Day3 <a name="day3"></a>
+## Lab introduction to Sky130 basic layers layout and LEF using inverter:<a name="lab-intro-to-sky130-basics">
+- In the sky130 semiconductor process, different colors represent distinct layers or regions on the integrated circuit. For instance, the blue-purple shade indicates the local interconnect layer, while light purple signifies metal 1 and pink denotes metal 2. N-well regions are depicted by solid dashed lines, while green is used for N-diffusion areas. Polysilicon gates are represented in red, and P-diffusion regions are shown in brown. 
+![image](https://i.imgur.com/6eTJ5ln.png)
+- In magic tool , we can use `s` for selecting a single item while , we can press `s+s+s` to select all teh connected elements.Then we can use `what` command in magic terminal, to know details about the element.`box` command can be used to get ehe selected area dimention's.
+![image](https://i.imgur.com/AeaypkX.png)
+
+## Lab steps to create std cell layout and extract spice netlist: <a name="lab-setps-create-std-cell-layout-and-extract-spice-netlist"></a>
+- We have to execute 'extract all` to get the files extracted, execute this command in the magic command window.
+
+![image](https://i.imgur.com/OzIt6AG.png)
+- The we have to convert the model to spice model. We can do it  by executing the commands. After executing the `extract all` the `.ext` .
+ ```
+ext2spice cthresh 0 rthresh 0
+ext2spice
+```
+![image](https://i.imgur.com/AatNHyY.png)
+- Then after executing the above commands , the `.spice` will be generated .
+- ![image](https://i.imgur.com/KcLTdUa.png)
+- The generated spice file contains the following code.
+- ![image](https://i.imgur.com/RLQJMOo.png)
+- Then using ngpsice, we can simulate the inverter.
+```
+    $ ngspice sky130_inv.spice
+```
