@@ -15,6 +15,10 @@
     - [Lab introduction to Magic tool options and DRC rules](#lab-drc-rules)
     - [Lab introduction to Magic and steps to load Sky130 tech-rules](#lab-introduction-to-magic-and-steps-to-load-sky130)
     - [Lab exercise to fix poly.9 error in Sky130 tech-file](#lab-exercise-to-fix-poly.9-tech-file)
+
+4. [Day4:](#day4)
+    - [Pre-layout timing analysis and importance of good clock tree ](#pre-layout-timinig-analysis-and-importancs-of-good-clock-tree)
+    - [ Lab steps to configure synthesis settings to fix slack and include vsdinv](#lab-steps-to-configure-synthesis-settings)
 ---
 # Day1:<a name ="day1"></a>
 ## Get Familiar with Open-Source EDA Tools<a name="get-familiar-with-open-source-eda-tools"></a>
@@ -309,7 +313,7 @@ ngspice 1-> plot y vs time a
 ### cell fall delay
 - it is time for output falling to 50% and input is rising to 50%. so, cell fall delay =(4.07735 - 4.04988)e-09 = 27.47 psec.
 
-# Lab introduction to Magic tool options and DRC rules <a name="lab-drc-rules"></a>
+## Lab introduction to Magic tool options and DRC rules <a name="lab-drc-rules"></a>
 - To download and extract the DRC corrections run the following commands.
 ```
 $ wget http://opencircuitdesign.com/open_pdks/archive/drc_tests.tgz
@@ -349,7 +353,7 @@ drc_Tests
 └── via.mag
 
 ```
-# Lab introduction to Magic and steps to load Sky130 tech-rules <a name="lab-introduction-to-magic-and-steps-to-load-sky130"></a>
+## Lab introduction to Magic and steps to load Sky130 tech-rules <a name="lab-introduction-to-magic-and-steps-to-load-sky130"></a>
 - To open the magic use the below command
 ```
 $ magic -d XR &
@@ -367,7 +371,7 @@ $ magic -d XR &
 
 ![image](https://i.imgur.com/iYUY26C.png)
 
-# Lab exercise to fix poly.9 error in Sky130 tech-file<a name="lab-exercise-to-fix-poly.9-tech-file">
+## Lab exercise to fix poly.9 error in Sky130 tech-file<a name="lab-exercise-to-fix-poly.9-tech-file">
 - to load the poly ,execute the command
 ```
 load poly
@@ -395,4 +399,123 @@ check drc
 ![image](https://i.imgur.com/ZHjFWwA.png)
 ![image](https://i.imgur.com/MLYWdDn.png)
 
+# Day 4:<a name="day4"></a>
+## Pre-layout timing analysis and importance of good clock tree <a name="pre-layout-timinig-analysis-and-importancs-of-good-clock-tree"></a>
 
+- To integrate the '.lef' file from the '.mag' file into the picorv32a flow, we must adhere to specific guidelines for creating standard cells:
+
+1. Input and output ports must align with the intersection of vertical and horizontal tracks.
+
+2. The standard cell's width should be an odd multiple of the track pitch, and its height should be an odd multiple of the track's vertical pitch.
+
+For further details, we can refer to the track file located at `pdk/sky130/libs.tech/openlane/sky130_fd_sc_hd/track.info.`
+![image](https://i.imgur.com/JKgbrBG.png)
+- During the routing stage, the track serves as a guide for the routing of metal layers like metal 1, metal 2, etc.
+- Automated Place and Route (PNR) requires specifying the routing paths, which are dictated by tracks. Each track is positioned at coordinates (0.23, 0.46)um horizontally and (0.17, 0.34)um vertically for li1, metal 1, and metal 2 layers.
+- In the layout, ports are situated on the li1 layer. To ensure that ports align with the intersection of tracks, we need to convert the grid into tracks.
+- To accomplish this, we'll first open the tracks file and then access the tkcon window and execute the help grid command
+
+![image](https://i.imgur.com/1r5Rsst.png)
+![image](https://i.imgur.com/EFhSGwW.png)
+
+- we have to execute the command, to extrac the `sky130_inv.lef` and `sky130_vsdinv.mag` file
+`
+lef write 
+`
+.
+
+![image](https://i.imgur.com/jcuvAYI.png)
+
+- Then we have to copy the file `sky130_vsdinv.mag`  to `src` folder of `picorv32a`, then we can verify the files using the command `ls -ltr` .
+
+![image](https://i.imgur.com/JyEWFJp.png)
+
+- Make these edits to the `congig.tcl` file.
+
+![image](https://i.imgur.com/1TA78BI.png)
+
+- Now we will go to the open lane directory and execute the docker command.Will Execute the following commands in a line
+
+```
+./flow.tcl -interactive
+package require openlane 0.9
+prep -design picorv32a
+set lefs [glob $::env(DESIGN_DIR)/src/*.lef]      
+add_lefs -src $lefs
+run_synthesis
+```
+
+![image](https://i.imgur.com/Cl4ObGh.png)
+
+![image](https://i.imgur.com/Uki8d7j.png)
+
+## Lab steps to configure synthesis settings to fix slack and include vsdinv <a name="lab-steps-to-configure-synthesis-settings"></a>
+- We refer to README file and try change some some settings, of the openlane.
+
+![image](https://i.imgur.com/XDFsYWt.png)
+- We can set som environment parameters but running the below command.
+
+```
+prep -design picorv32a -tag 01-04_12-54 -overwrite
+
+set lefs [glob $::env(DESIGN_DIR)/src/*.lef]
+
+add_lefs -src $lefs
+
+echo $::env(SYNTH_STRATEGY)
+
+set ::env(SYNTH_STRATEGY) "DELAY 3"
+
+echo $::env(SYNTH_BUFFERING)
+
+echo $::env(SYNTH_SIZING)
+
+set ::env(SYNTH_SIZING) 1
+
+echo $::env(SYNTH_DRIVING_CELL)
+
+run_synthesis
+
+prep -design picorv32a -tag 01-04_12-54 -overwrite
+```
+
+- In the previous run we have observed the negative slack value
+```
+wns(worst negative slack)= -23.89
+tns(total negative slack)= -711.59.
+```
+- after changing the settings we will execute the synthesis again by executing the command `run_synthesis`.
+
+![image](https://i.imgur.com/2MgLoOR.png)
+
+![image](https://i.imgur.com/2MgLoOR.png)
+
+- Now we go a step ahead and execute the `run_floor` plan.
+
+![image](https://i.imgur.com/L8uUpnH.png)
+
+![image](https://i.imgur.com/DUbqbq8.png)
+
+- As we encountered the errors we need to execute the below command sto make make it for floorplan.
+```
+init_floorplan
+place_io
+tap_decap_or
+```
+
+![image](https://i.imgur.com/Isp1Y7P.png)
+
+![image](https://i.imgur.com/6843cmt.png)
+
+![image](https://i.imgur.com/ojH16gV.png)
+
+- Now we can procees with the floorplan. we execute `run_floorplan`
+
+![image](https://i.imgur.com/R3CcfWK.png)
+
+- we can view the floor plan by executing the command `magic -T /home/vsduser/Desktop/work/tools/openlane_working_dir/pdks/sky130A/libs.tech/magic/sky130A.tech lef read ../../tmp/merged.lef def read picorv32a.placement.def` from the folder `/Desktop/work/tools/openlane_working_dir/openlane/designs/picorv32a/runs/01-04_12-54/results/placement`.
+
+![image](https://i.imgur.com/20Gldfi.png)
+
+- Then we can see inverter ,select the inverter by placing the cursor on the inverter and press `s` then type `expand in the magic terminal.
+![image](https://i.imgur.com/srMnR1G.png)
