@@ -19,7 +19,10 @@
 4. [Day4:](#day4)
     - [Pre-layout timing analysis and importance of good clock tree ](#pre-layout-timinig-analysis-and-importancs-of-good-clock-tree)
     - [ Lab steps to configure synthesis settings to fix slack and include vsdinv](#lab-steps-to-configure-synthesis-settings)
----
+    - [Lab steps to configure OpenSTA for post-synth timing analysis](#lab-steps-to-configure-opensta-for-post-synth-timing-analysis)
+    - [Lab steps to optimize synthesis to reduce setup violations](#lab-steps-to-optimize-synthesis-to-reduce-setup-violations)
+    -  [Lab steps to do basic timing ECO](#lab-steps-to-do-basic-timing-eco)
+
 # Day1:<a name ="day1"></a>
 ## Get Familiar with Open-Source EDA Tools<a name="get-familiar-with-open-source-eda-tools"></a>
 
@@ -518,3 +521,85 @@ tap_decap_or
 ![image](https://i.imgur.com/20Gldfi.png)
 
 - Then we can see inverter ,select the inverter by placing the cursor on the inverter and press `s` then type `expand in the magic terminal.
+
+
+## Lab steps to configure OpenSTA for post-synth timing analysis <a name ="lab-steps-to-configure-opensta-for-post-synth-timing-analysis"></a>
+- we can so STA analysis to find the timining issues.First we will run the synthesis using the following commands in openlane directory
+
+```
+docker
+./flow.tcl -interactive
+package require openlane 0.9
+prep -design picorv32a
+set lefs [glob $::env(DESIGN_DIR)/src/*.lef]
+add_lefs -src $lefs
+set ::env(SYNTH_SIZING) 1
+run_synthesis
+```
+![image](https://i.imgur.com/W7jaRzi.png)
+
+![image](https://i.imgur.com/fsnXFcL.png)
+
+- Now we have to make a new `pre_sta.conf file`. We can do this by vim editor or in simple text editor also. We store this  `pre_sta.conf` file in `openlane` folder .
+
+![image](https://i.imgur.com/fdG6iDD.png)
+
+![image](https://i.imgur.com/ASfNLxU.png)
+
+- Now we will create a new `my_base.sdc` file in the , and we will copy the content from the `base.sdc` and edit the content as shown below. we store this file in `openlane/designs/picorv32a/src` .
+
+![image](https://i.imgur.com/fdG6iDD.png)
+
+![image](https://i.imgur.com/lTVlFtH.png)
+
+- Then we execute the command `sta pre_sta.conf` , then we get the result as below
+
+![image](https://i.imgur.com/fSIByBb.png)
+
+![image](https://i.imgur.com/VXHQX9N.png)
+
+![image](https://i.imgur.com/4xVpFvP.png)
+
+## Lab steps to optimize synthesis to reduce setup violations:<a name="lab-steps-to-optimize-synthesis-to-reduce-setup-violations"></a>
+
+- Now we will increase the fanout, and again synthesis the circuit ,by running the below commands.
+```
+prep -design picorv32a -tag 02-04_05-27 -overwrite
+set lefs [glob $::env(DESIGN_DIR)/src/*.lef]
+add_lefs -src $lefs
+set ::env(SYNTH_SIZING) 1
+set ::env(SYNTH_MAX_FANOUT) 4
+echo $::env(SYNTH_DRIVING_CELL)
+run_synthesis
+```
+![image](https://i.imgur.com/EJtFzDt.png)
+
+- Now run the command `sta pre_sta.conf` .
+
+![image](https://i.imgur.com/te6xJyo.png)ab steps to do basic timing ECO
+
+![image](https://i.imgur.com/JhprkAp.png)
+
+![image](https://i.imgur.com/4xVpFvP.png)ab steps to do basic timing ECO
+
+## Lab steps to do basic timing ECO <a name ="lab-steps-to-do-basic-timing-eco"></a>
+
+- To Reports all the connections to a net 
+`report_net -connections _11672_`
+
+- To Check the command syntax 
+`help replace_cell`
+
+- To Replace the cell 
+`replace_cell _14510_ sky130_fd_sc_hd__or3_4`
+
+- To Generate the custom timing report 
+`report_checks -fields {net cap slew input_pins} -digits 4`
+
+![image](https://i.imgur.com/604mbSJ.png)
+
+![image](https://i.imgur.com/7cPobas.png)
+
+
+![image](https://i.imgur.com/JlBPZIA.png)
+![image](https://i.imgur.com/5DtmBKt.png)
