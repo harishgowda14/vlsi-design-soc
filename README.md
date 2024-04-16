@@ -518,4 +518,3 @@ tap_decap_or
 ![image](https://i.imgur.com/20Gldfi.png)
 
 - Then we can see inverter ,select the inverter by placing the cursor on the inverter and press `s` then type `expand in the magic terminal.
-![image](https://i.imgur.com/srMnR1G.png)
