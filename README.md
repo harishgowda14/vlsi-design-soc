@@ -26,6 +26,9 @@
     -  [Lab steps to verify CTS runs](#lab-steps-to-verify-cts-runs)
     -  [Lab steps to execute OpenSTA with right timing libraries and CTS assignment](#lab-steps-to-execute-opensta-with-right-timing-libraries-and-cts-assignment)
 
+5. [Day 5:](#day5)
+    - [Final step for RTL2GDS using tritinRoute and openSTA](#Final-step-for-rtltogds2)
+
 # Day1:<a name ="day1"></a>
 ## Get Familiar with Open-Source EDA Tools<a name="get-familiar-with-open-source-eda-tools"></a>
 
@@ -768,3 +771,41 @@ exit
 ![image](https://i.imgur.com/gvzYZsX.png)
 
 ![image](https://i.imgur.com/OfUSiji.png)
+
+
+# Day 5 <a name="day5"></a>
+## Final step for RTL2GDS using tritinRoute and openSTA<a name="Final-step-for-rtltogds2"></a>
+ - To contiue we need to open openlane, and prep the previous run without overwriting the config file
+ 
+```
+docker
+
+./flow.tcl -interactive
+package require openlane 0.9
+prep -design picorv32a -tag 01-04_12-54
+echo $::env(CURRENT_DEF)
+
+```
+
+![image](https://i.imgur.com/zlsIN0C.png)
+- Before procceding to the routing , we need to generate the power distribution network by executing the command `gen_pdn`
+
+![image](https://i.imgur.com/USPawkm.png)
+
+![image](https://i.imgur.com/wFTnB9Q.png)
+
+- After generating the power distribution network, we can procced to routing , by executing the command `run_routing`. This process takes some time.
+
+![image](https://i.imgur.com/PZHP3u0.png)
+
+![image](https://i.imgur.com/zPNmFMs.png)
+
+- You observe that routing takes aroung 19 minutes to complete, the result's of the routing are stored in the directory 
+
+`/home/vsduser/Desktop/work/tools/openlane_working_dir/openlane/designs/picorv32a/runs/01-04_12-54/results/routing
+`
+![image](https://i.imgur.com/iC53vkK.png)
+
+- Sceern shot after the routing.
+
+![image](https://i.imgur.com/Ny9aZwc.png)
