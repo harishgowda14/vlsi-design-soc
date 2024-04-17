@@ -22,6 +22,9 @@
     - [Lab steps to configure OpenSTA for post-synth timing analysis](#lab-steps-to-configure-opensta-for-post-synth-timing-analysis)
     - [Lab steps to optimize synthesis to reduce setup violations](#lab-steps-to-optimize-synthesis-to-reduce-setup-violations)
     -  [Lab steps to do basic timing ECO](#lab-steps-to-do-basic-timing-eco)
+    -  [Lab steps to run CTS using Triton](#lab-steps-to-run-cts-using-triton)
+    -  [Lab steps to verify CTS runs](#lab-steps-to-verify-cts-runs)
+    -  [Lab steps to execute OpenSTA with right timing libraries and CTS assignment](#lab-steps-to-execute-opensta-with-right-timing-libraries-and-cts-assignment)
 
 # Day1:<a name ="day1"></a>
 ## Get Familiar with Open-Source EDA Tools<a name="get-familiar-with-open-source-eda-tools"></a>
@@ -603,3 +606,165 @@ run_synthesis
 
 ![image](https://i.imgur.com/JlBPZIA.png)
 ![image](https://i.imgur.com/5DtmBKt.png)
+
+## Lab steps to run CTS using Triton<a name="lab-steps-to-run-cts-using-triton"></a>
+- Now as after we make changes , we the verilog file using the command `write_verilog` and the file is located in  `/home/vsduser/Desktop/work/tools/openlane_working_dir/openlane/designs/picorv32a/runs/01-04_12-54/results/synthesis/picorv32a.synthesis.v`
+
+![image](https://i.imgur.com/S5HYKST.png)
+
+![image](https://i.imgur.com/QVrf73V.png)
+
+- Now we don't do the synthesis again , If we did all our modifications will be cleared. instead we continue from floor plan.To run the floor plan , we continue to execute the following commands.
+
+```
+   prep -design picorv32a -tag 02-04_05-27 
+   set lefs [glob $::env(DESIGN_DIR)/src/*.lef]
+   add_lefs -src $lefs
+   set ::env(SYNTH_STRATEGY) "DELAY 3"
+   set ::env(SYNTH_SIZING) 1
+   init_floorplan
+   place_io
+   tap_decap_or
+   run_placement
+
+   # Incase getting error will use this command
+   unset ::env(LIB_CTS)
+
+```
+![image](https://i.imgur.com/pbWDGXC.png)
+
+![image](https://i.imgur.com/PjbIpzy.png)
+
+![image](https://i.imgur.com/shMF6Um.png)
+
+![image](https://i.imgur.com/P88rKwW.png)
+
+![image](https://i.imgur.com/PHL4v5f.png)
+
+- Finally we run the command `run_cts`
+
+![image](https://i.imgur.com/D2Jent1.png)
+
+-After successfull execution of the command it will genrate the ` picorv32a.cts.def`, which will be used for power planning and furthur steps. 
+
+![image](https://i.imgur.com/yjSoc8c.png)
+
+ - ![image](https://i.imgur.com/2406XPs.png)
+
+## Lab steps to verify CTS runs<a name="lab-steps-to-verify-cts-runs"></a>
+- we are using all these atomic commands like `run_synthesis` ,`run_floorplan` and etc.., are these are stores in `/home/vsduser/Desktop/work/tools/openlane_working_dir/openlane/scripts/tcl_commands
+`. This folder contains.
+
+![image](https://i.imgur.com/3JIuJ5w.png)
+
+- 
+Let us look in to the `cts.tcl`.
+
+![image](https://i.imgur.com/pRrB75X.png)
+![image](https://i.imgur.com/WTDfzFl.png)
+
+- The openroad contain these files, observe that it does not contain a synthesis file.
+![image](https://i.imgur.com/vehKxRz.png)
+- To create a database in OPENROAD using LEF and TMP files, follow these steps:
+
+1.Ensure that you are in the directory containing the LEF and TMP files.
+
+2.Launch the OPENROAD tool by entering the command:
+    `openroad` inside the openlane flor
+    
+![image](https://i.imgur.com/x77PRkq.png)
+
+- 1.Once inside the OPENROAD tool, execute the following commands to read the LEF and DEF files:
+
+``` 
+read_lef /openLANE_flow/designs/picorv32a/runs/02-04_05-27/tmp/merged.lef
+read_def /openLANE_flow/designs/picorv32a/runs/02-04_05-27/results/cts/picorv32a.cts.def
+```
+ 
+- To create the OpenROAD database file named pico_cts.db, use the command:
+`write_db pico_cts.db`
+ 
+ ![image](https://i.imgur.com/3AFo9zb.png)
+ 
+ - we have canr read  the `db` file using the command `read_db pico_cts.db`
+ 
+![image](https://i.imgur.com/qnGYJqQ.png)
+
+### To read the netlist post CTS
+
+read_verilog /openLANE_flow/designs/picorv32a/runs/02-04_05-27/results/synthesis/picorv32a.synthesis_cts.v
+
+- To read the library for design `read_liberty $::env(LIB_SYNTH_COMPLETE)`.
+- To link the design and library `link_design picorv32a` .
+- To read the custom sdc we have created `read_sdc /openLANE_flow/designs/picorv32a/src/my_base.sdc` .
+
+- To setting all clocks as propagated clocks `set_propagated_clock [all_clocks]` .
+
+- To Generate the custom timing report  `report_checks -path_delay min_max -fields {slew trans net cap input_pins} -format full_clock_expanded -digits 4` .
+- To exit from the openroad flow to openlane flow `exit` .
+
+![image](https://i.imgur.com/19gNWhW.png)
+
+![image](https://i.imgur.com/f2pRlLc.png)
+
+![image](https://i.imgur.com/Y8P4v4e.png)
+
+- The results of the report
+
+![image](https://i.imgur.com/Ka9jOr2.png)
+
+![image](https://i.imgur.com/TejPGZ6.png)
+
+## Lab steps to execute OpenSTA with right timing libraries and CTS assignment<a name="lab-steps-to-execute-opensta-with-right-timing-libraries-and-cts-assignment"></a>
+- To remove sky130_fd_sc_hd__clkbuf_1 from the list 
+`set ::env(CTS_CLK_BUFFER_LIST) [lreplace $::env(CTS_CLK_BUFFER_LIST) 0 0]`
+
+- To check the current value of CTS_CLK_BUFFER_LIST 
+`echo $::env(CTS_CLK_BUFFER_LIST)`
+
+- To check the current value of CURRENT_DEF
+`echo $::env(CURRENT_DEF)`
+- To set def as placement def
+`set ::env(CURRENT_DEF) /openLANE_flow/designs/picorv32a/runs/02-04_05-27/results/placement/picorv32a.placement.def`
+
+- To run cts
+`run_cts`
+
+To check the current value of CTS_CLK_BUFFER_LIST 
+`echo $::env(CTS_CLK_BUFFER_LIST)`
+## Lab steps to observe impact of bigger CTS buffers on setup and hold timing
+
+- Now we will follow the same commands we have used earlier to run OPENROAD,
+```
+openroad
+read_lef /openLANE_flow/designs/picorv32a/runs/02-04_05-27/tmp/merged.lef
+read_def /openLANE_flow/designs/picorv32a/runs/02-04_05-27/results/cts/picorv32a.cts.def
+write_db pico_cts1.db
+read_db pico_cts.db
+read_verilog /openLANE_flow/designs/picorv32a/runs/02-04_05-27/results/synthesis/picorv32a.synthesis_cts.v
+read_liberty $::env(LIB_SYNTH_COMPLETE)
+link_design picorv32a
+read_sdc /openLANE_flow/designs/picorv32a/src/my_base.sdc
+set_propagated_clock [all_clocks]
+report_checks -path_delay min_max -fields {slew trans net cap input_pins} -format full_clock_expanded -digits 4
+report_clock_skew -hold
+report_clock_skew -setup
+exit
+```
+![image](https://i.imgur.com/eIFOV6r.png)
+
+![image](https://i.imgur.com/F5Ayrob.png)
+
+![image](https://i.imgur.com/9DHZhLI.png)
+
+![image](https://i.imgur.com/Le15dj4.png)
+
+![image](https://i.imgur.com/2JbLDW3.png)
+
+![image](https://i.imgur.com/mXUop7a.png)
+
+![image](https://i.imgur.com/VMgzImq.png)
+
+![image](https://i.imgur.com/gvzYZsX.png)
+
+![image](https://i.imgur.com/OfUSiji.png)
